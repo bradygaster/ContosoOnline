@@ -1,0 +1,6 @@
+@ContosoOnline.OrderApi_HostAddress = http://localhost:5211
+
+GET {{ContosoOnline.OrderApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
