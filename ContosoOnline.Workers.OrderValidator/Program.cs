@@ -1,6 +1,6 @@
 using ContosoOnline.Workers.OrderValidator;
 
-var builder = Host.CreateApplicationBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHostedService<Worker>();
 
 var host = builder.Build();
