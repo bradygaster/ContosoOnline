@@ -11,14 +11,14 @@ public static class CartEndpoints
     {
         var group = routes.MapGroup("/api/Cart").WithTags(nameof(Cart));
 
-        group.MapGet("/", async (ContosoOnlineOrderApiDbContext db) =>
+        group.MapGet("/", async (OrderDbContext db) =>
         {
             return await db.Cart.ToListAsync();
         })
         .WithName("GetAllCarts")
         .WithOpenApi();
 
-        group.MapGet("/{id}", async Task<Results<Ok<Cart>, NotFound>> (int id, ContosoOnlineOrderApiDbContext db) =>
+        group.MapGet("/{id}", async Task<Results<Ok<Cart>, NotFound>> (int id, OrderDbContext db) =>
         {
             return await db.Cart.AsNoTracking()
                 .FirstOrDefaultAsync(model => model.Id == id)
@@ -29,7 +29,7 @@ public static class CartEndpoints
         .WithName("GetCartById")
         .WithOpenApi();
 
-        group.MapPut("/{id}", async Task<Results<Ok, NotFound>> (int id, Cart cart, ContosoOnlineOrderApiDbContext db) =>
+        group.MapPut("/{id}", async Task<Results<Ok, NotFound>> (int id, Cart cart, OrderDbContext db) =>
         {
             var affected = await db.Cart
                 .Where(model => model.Id == id)
@@ -42,7 +42,7 @@ public static class CartEndpoints
         .WithName("UpdateCart")
         .WithOpenApi();
 
-        group.MapPost("/", async (Cart cart, ContosoOnlineOrderApiDbContext db) =>
+        group.MapPost("/", async (Cart cart, OrderDbContext db) =>
         {
             db.Cart.Add(cart);
             await db.SaveChangesAsync();
@@ -51,7 +51,7 @@ public static class CartEndpoints
         .WithName("CreateCart")
         .WithOpenApi();
 
-        group.MapDelete("/{id}", async Task<Results<Ok, NotFound>> (int id, ContosoOnlineOrderApiDbContext db) =>
+        group.MapDelete("/{id}", async Task<Results<Ok, NotFound>> (int id, OrderDbContext db) =>
         {
             var affected = await db.Cart
                 .Where(model => model.Id == id)

@@ -11,14 +11,14 @@ public static class CartItemEndpoints
     {
         var group = routes.MapGroup("/api/CartItem").WithTags(nameof(CartItem));
 
-        group.MapGet("/", async (ContosoOnlineOrderApiDbContext db) =>
+        group.MapGet("/", async (OrderDbContext db) =>
         {
             return await db.CartItem.ToListAsync();
         })
         .WithName("GetAllCartItems")
         .WithOpenApi();
 
-        group.MapGet("/{id}", async Task<Results<Ok<CartItem>, NotFound>> (int id, ContosoOnlineOrderApiDbContext db) =>
+        group.MapGet("/{id}", async Task<Results<Ok<CartItem>, NotFound>> (int id, OrderDbContext db) =>
         {
             return await db.CartItem.AsNoTracking()
                 .FirstOrDefaultAsync(model => model.Id == id)
@@ -29,7 +29,7 @@ public static class CartItemEndpoints
         .WithName("GetCartItemById")
         .WithOpenApi();
 
-        group.MapPut("/{id}", async Task<Results<Ok, NotFound>> (int id, CartItem cartItem, ContosoOnlineOrderApiDbContext db) =>
+        group.MapPut("/{id}", async Task<Results<Ok, NotFound>> (int id, CartItem cartItem, OrderDbContext db) =>
         {
             var affected = await db.CartItem
                 .Where(model => model.Id == id)
@@ -44,7 +44,7 @@ public static class CartItemEndpoints
         .WithName("UpdateCartItem")
         .WithOpenApi();
 
-        group.MapPost("/", async (CartItem cartItem, ContosoOnlineOrderApiDbContext db) =>
+        group.MapPost("/", async (CartItem cartItem, OrderDbContext db) =>
         {
             db.CartItem.Add(cartItem);
             await db.SaveChangesAsync();
@@ -53,7 +53,7 @@ public static class CartItemEndpoints
         .WithName("CreateCartItem")
         .WithOpenApi();
 
-        group.MapDelete("/{id}", async Task<Results<Ok, NotFound>> (int id, ContosoOnlineOrderApiDbContext db) =>
+        group.MapDelete("/{id}", async Task<Results<Ok, NotFound>> (int id, OrderDbContext db) =>
         {
             var affected = await db.CartItem
                 .Where(model => model.Id == id)

@@ -1,9 +1,12 @@
-﻿using ContosoOnline.OrderApi;
+﻿using ContosoOnline.Common;
+using ContosoOnline.OrderApi;
 using ContosoOnline.OrderApi.Data;
 using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<ContosoOnlineOrderApiDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("ContosoOnlineOrderApiDbContext") ?? throw new InvalidOperationException("Connection string 'ContosoOnlineOrderApiDbContext' not found.")));
+builder.Services.AddDbContext<OrderDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("OrderDbContext") ?? throw new InvalidOperationException("Connection string 'OrderDbContext' not found.")));
+builder.Services.AddHostedService<DatabaseInitializer<OrderDbContext>>();
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

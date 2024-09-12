@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using ContosoOnline.CatalogApi.DataModels;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace ContosoOnline.CatalogApi.Data
 {
@@ -14,6 +9,6 @@ namespace ContosoOnline.CatalogApi.Data
         {
         }
 
-        public DbSet<ContosoOnline.CatalogApi.DataModels.Product> Product { get; set; } = default!;
+        public DbSet<ContosoOnline.CatalogApi.DataModels.Product> Products { get; set; } = default!;
     }
 }

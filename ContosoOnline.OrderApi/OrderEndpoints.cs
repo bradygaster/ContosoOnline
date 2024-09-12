@@ -11,14 +11,14 @@ public static class OrderEndpoints
     {
         var group = routes.MapGroup("/api/Order").WithTags(nameof(Order));
 
-        group.MapGet("/", async (ContosoOnlineOrderApiDbContext db) =>
+        group.MapGet("/", async (OrderDbContext db) =>
         {
             return await db.Order.ToListAsync();
         })
         .WithName("GetAllOrders")
         .WithOpenApi();
 
-        group.MapGet("/{id}", async Task<Results<Ok<Order>, NotFound>> (int id, ContosoOnlineOrderApiDbContext db) =>
+        group.MapGet("/{id}", async Task<Results<Ok<Order>, NotFound>> (int id, OrderDbContext db) =>
         {
             return await db.Order.AsNoTracking()
                 .FirstOrDefaultAsync(model => model.Id == id)
@@ -29,7 +29,7 @@ public static class OrderEndpoints
         .WithName("GetOrderById")
         .WithOpenApi();
 
-        group.MapPut("/{id}", async Task<Results<Ok, NotFound>> (int id, Order order, ContosoOnlineOrderApiDbContext db) =>
+        group.MapPut("/{id}", async Task<Results<Ok, NotFound>> (int id, Order order, OrderDbContext db) =>
         {
             var affected = await db.Order
                 .Where(model => model.Id == id)
@@ -44,7 +44,7 @@ public static class OrderEndpoints
         .WithName("UpdateOrder")
         .WithOpenApi();
 
-        group.MapPost("/", async (Order order, ContosoOnlineOrderApiDbContext db) =>
+        group.MapPost("/", async (Order order, OrderDbContext db) =>
         {
             db.Order.Add(order);
             await db.SaveChangesAsync();
@@ -53,7 +53,7 @@ public static class OrderEndpoints
         .WithName("CreateOrder")
         .WithOpenApi();
 
-        group.MapDelete("/{id}", async Task<Results<Ok, NotFound>> (int id, ContosoOnlineOrderApiDbContext db) =>
+        group.MapDelete("/{id}", async Task<Results<Ok, NotFound>> (int id, OrderDbContext db) =>
         {
             var affected = await db.Order
                 .Where(model => model.Id == id)
