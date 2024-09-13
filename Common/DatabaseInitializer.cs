@@ -3,10 +3,8 @@ using System.Diagnostics;
 
 namespace ContosoOnline.Common;
 
-public class DatabaseInitializer<T>(
-    IServiceProvider serviceProvider,
-    IHostApplicationLifetime hostApplicationLifetime) : BackgroundService
-    where T : DbContext
+public class DatabaseInitializer<T>(IServiceProvider serviceProvider, DatabaseSeeder<T>? seeder = null)
+    : BackgroundService where T : DbContext
 {
     public const string ActivitySourceName = "Migrations";
     private static readonly ActivitySource s_activitySource = new(ActivitySourceName);
@@ -18,6 +16,11 @@ public class DatabaseInitializer<T>(
         var dbContext = scope.ServiceProvider.GetRequiredService<T>();
 
         await EnsureDatabaseAsync(dbContext, cancellationToken);
+
+        if(seeder is not null)
+        {
+            await seeder.Seed(dbContext);
+        }
     }
 
     private static async Task EnsureDatabaseAsync(T dbContext, CancellationToken cancellationToken)

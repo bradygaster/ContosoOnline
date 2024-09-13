@@ -1,11 +1,13 @@
 ﻿using ContosoOnline.CatalogApi;
 using ContosoOnline.CatalogApi.Data;
+using ContosoOnline.CatalogApi.Services;
 using ContosoOnline.Common;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<CatalogDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("CatalogDbContext") ?? throw new InvalidOperationException("Connection string 'CatalogDbContext' not found.")));
+builder.Services.AddSingleton<DatabaseSeeder<CatalogDbContext>, BogusFakeCatalogDatabaseSeeder>();
 builder.Services.AddHostedService<DatabaseInitializer<CatalogDbContext>>();
 
 // Add services to the container.
