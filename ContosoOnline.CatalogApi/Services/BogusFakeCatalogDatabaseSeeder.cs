@@ -22,10 +22,3 @@ public class BogusFakeCatalogDatabaseSeeder : DatabaseSeeder<CatalogDbContext>
         }
     }
 }
-
-public class ProductFaker : Faker<Product>
-{
-    public ProductFaker()
-    { 
-    }
-}
