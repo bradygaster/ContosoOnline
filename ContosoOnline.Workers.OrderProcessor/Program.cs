@@ -1,6 +1,6 @@
 using ContosoOnline.Workers.OrderProcessor;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = Host.CreateApplicationBuilder(args);
 builder.Services.AddHostedService<Worker>();
 
 var host = builder.Build();
