@@ -10,13 +10,17 @@ public static class CartEndpoints
     {
         var group = routes.MapGroup("carts").WithTags(nameof(Cart));
 
-        group.MapGet("/", async (OrderDbContext db) =>
+        // create a new, empty cart
+        group.MapPost("/", async (Cart cart, OrderDbContext db) =>
         {
-            return await db.Cart.ToListAsync();
+            db.Cart.Add(cart);
+            await db.SaveChangesAsync();
+            return TypedResults.Created($"/carts/{cart.Id}", cart);
         })
-        .WithName("GetAllCarts")
+        .WithName("CreateCart")
         .WithOpenApi();
 
+        // get a cart by id
         group.MapGet("/{id}", async Task<Results<Ok<Cart>, NotFound>> (Guid id, OrderDbContext db) =>
         {
             return await db.Cart.AsNoTracking()
@@ -28,36 +32,52 @@ public static class CartEndpoints
         .WithName("GetCartById")
         .WithOpenApi();
 
-        group.MapPut("/{id}", async Task<Results<Ok, NotFound>> (Guid id, Cart cart, OrderDbContext db) =>
+        var itemGroup = group.MapGroup("{cartId}/items").WithTags(nameof(CartItem));
+
+        // get all items in a cart
+        itemGroup.MapGet("/", List<CartItem> (Guid cartId, OrderDbContext db) =>
         {
-            var affected = await db.Cart
+            var result = db.CartItem.Where(x => x.CartId == cartId);
+            return result.Any() ? result.ToList() : new List<CartItem>();
+        })
+        .WithName("GetCartItems")
+        .WithOpenApi();
+
+        // create a new item in a cart
+        itemGroup.MapPost("/", async (Guid cartId, CartItem cartItem, OrderDbContext db) =>
+        {
+            db.CartItem.Add(cartItem);
+            await db.SaveChangesAsync();
+            return TypedResults.Created($"/items/{cartItem.Id}", cartItem);
+        })
+        .WithName("CreateCartItem")
+        .WithOpenApi();
+
+        // update an item in a cart
+        itemGroup.MapPut("/{id}", async Task<Results<Ok, NotFound>> (Guid cartId, Guid id, CartItem cartItem, OrderDbContext db) =>
+        {
+            var affected = await db.CartItem
                 .Where(model => model.Id == id)
                 .ExecuteUpdateAsync(setters => setters
-                    .SetProperty(m => m.Id, cart.Id)
-                    .SetProperty(m => m.Started, cart.Started)
+                    .SetProperty(m => m.Id, cartItem.Id)
+                    .SetProperty(m => m.CartId, cartItem.CartId)
+                    .SetProperty(m => m.ProductId, cartItem.ProductId)
+                    .SetProperty(m => m.Quantity, cartItem.Quantity)
                     );
             return affected == 1 ? TypedResults.Ok() : TypedResults.NotFound();
         })
-        .WithName("UpdateCart")
+        .WithName("UpdateCartItem")
         .WithOpenApi();
 
-        group.MapPost("/", async (Cart cart, OrderDbContext db) =>
+        // delete an item in a cart
+        itemGroup.MapDelete("/{id}", async Task<Results<Ok, NotFound>> (Guid cartId, Guid id, OrderDbContext db) =>
         {
-            db.Cart.Add(cart);
-            await db.SaveChangesAsync();
-            return TypedResults.Created($"/carts/{cart.Id}",cart);
-        })
-        .WithName("CreateCart")
-        .WithOpenApi();
-
-        group.MapDelete("/{id}", async Task<Results<Ok, NotFound>> (Guid id, OrderDbContext db) =>
-        {
-            var affected = await db.Cart
+            var affected = await db.CartItem
                 .Where(model => model.Id == id)
                 .ExecuteDeleteAsync();
             return affected == 1 ? TypedResults.Ok() : TypedResults.NotFound();
         })
-        .WithName("DeleteCart")
+        .WithName("DeleteCartItem")
         .WithOpenApi();
     }
 }

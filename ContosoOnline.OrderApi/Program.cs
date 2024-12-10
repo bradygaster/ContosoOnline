@@ -24,11 +24,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// Map our custom HTTP API endpoints
 app.MapCartEndpoints();
-
-app.MapCartItemEndpoints();
-
 app.MapOrderEndpoints();
-
 
 app.Run();

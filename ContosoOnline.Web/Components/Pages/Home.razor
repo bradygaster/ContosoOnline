@@ -1,7 +1,10 @@
 ﻿@using Clients
+@using Microsoft.JSInterop
 @rendermode InteractiveServer
 @page "/"
 @inject CatalogApiClient catalogApiClient
+@inject ShoppingApiClient shoppingApiClient
+@inject IJSRuntime jsRuntime
 
 <PageTitle>Contoso Product Catalog</PageTitle>
 
@@ -12,20 +15,42 @@
     <table class="table">
         <thead>
             <tr>
+                <th></th>
                 <th style="padding-right: 20px;">Price</th>
                 <th>Name</th>
                 <th style="padding-left: 30px;">Description</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var product in products)
             {
                 <tr>
+                    <td></td>
                     <td>@product.Price</td>
                     <td>@product.Name</td>
                     <td style="padding-left: 30px;">@product.Description</td>
+                    <td>
+                        @if (cart != null && cart.Items.Any(i => i.ProductId == product.Id))
+                        {
+                            <button @onclick="() => AddToCart(product)">@(cart.Items.First(i => i.ProductId == product.Id).Quantity) in Cart</button>
+                        }
+                        else
+                        {
+                            <button @onclick="() => AddToCart(product)">Add to Cart</button>
+                        }
+                    </td>
                 </tr>
             }
+            <tr>
+                <td colspan="4"></td>
+                <td>
+                    @if (cart != null && cart.Items.Any())
+                    {
+                        <button @onclick="() => ClearCart()">Clear Cart</button>
+                    }
+                </td>
+            </tr>
         </tbody>
     </table>
 }
@@ -33,9 +58,86 @@
 @code
 {
     IEnumerable<CatalogItem>? products;
+    Cart? cart = new Cart { Id = Guid.Empty };
+    private bool isInitialized = false;
 
     protected override async Task OnInitializedAsync()
     {
         products = await catalogApiClient.GetCatalogItemsAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !isInitialized)
+        {
+            await RefreshCart();
+            isInitialized = true;
+            StateHasChanged();
+        }
+    }
+
+    private async Task RefreshCart()
+    {
+        var cartId = await GetCartIdFromLocalStorage();
+        if (cartId != Guid.Empty)
+        {
+            try
+            {
+                cart = await shoppingApiClient.GetCartAsync(cartId);
+            }
+            catch
+            {
+                await SetCartIdInLocalStorage(Guid.Empty);
+            }
+        }
+        else
+        {
+            cart = new Cart
+                {
+                    Id = Guid.NewGuid(),
+                    Started = DateTime.UtcNow
+                };
+
+            await shoppingApiClient.CreateCartAsync(cart);
+            await SetCartIdInLocalStorage(cart.Id);
+        }
+    }
+
+    private async Task AddToCart(CatalogItem product)
+    {
+        if (!cart!.Items.Any(i => i.ProductId == product.Id))
+        {
+            await shoppingApiClient.AddItemToCart(new CartItem { CartId = cart.Id, ProductId = product.Id, Quantity = 1 });
+        }
+        else
+        {
+            await shoppingApiClient.UpdateItemInCart(new CartItem
+                {
+                    Id = cart!.Items.First(x => x.ProductId == product.Id).Id,
+                    CartId = cart.Id,
+                    ProductId = product.Id,
+                    Quantity = cart.Items.First(i => i.ProductId == product.Id).Quantity + 1
+                });
+        }
+
+        await RefreshCart();
+        StateHasChanged();
+    }
+
+    private async Task<Guid> GetCartIdFromLocalStorage()
+    {
+        var cartIdString = await jsRuntime.InvokeAsync<string>("localStorage.getItem", "cartId");
+        return Guid.TryParse(cartIdString, out var cartId) ? cartId : Guid.Empty;
+    }
+
+    private async Task SetCartIdInLocalStorage(Guid cartId)
+    {
+        await jsRuntime.InvokeVoidAsync("localStorage.setItem", "cartId", cartId.ToString());
+    }
+
+    private async Task ClearCart()
+    {
+        await SetCartIdInLocalStorage(Guid.Empty);
+        await RefreshCart();
     }
 }

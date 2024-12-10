@@ -15,6 +15,11 @@ builder.Services.AddHttpClient<CatalogApiClient>(client =>
     client.BaseAddress = new("https://localhost:7079");
 });
 
+builder.Services.AddHttpClient<ShoppingApiClient>(client =>
+{
+    client.BaseAddress = new("https://localhost:7144");
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

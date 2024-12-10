@@ -1,8 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using ContosoOnline.OrderApi.Data;
+﻿using ContosoOnline.OrderApi.Data;
 using ContosoOnline.OrderApi.DataModels;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.OpenApi;
+using Microsoft.EntityFrameworkCore;
 namespace ContosoOnline.OrderApi;
 
 public static class OrderEndpoints
@@ -51,16 +50,6 @@ public static class OrderEndpoints
             return TypedResults.Created($"/orders/{order.Id}",order);
         })
         .WithName("CreateOrder")
-        .WithOpenApi();
-
-        group.MapDelete("/{id}", async Task<Results<Ok, NotFound>> (Guid id, OrderDbContext db) =>
-        {
-            var affected = await db.Order
-                .Where(model => model.Id == id)
-                .ExecuteDeleteAsync();
-            return affected == 1 ? TypedResults.Ok() : TypedResults.NotFound();
-        })
-        .WithName("DeleteOrder")
         .WithOpenApi();
     }
 }
