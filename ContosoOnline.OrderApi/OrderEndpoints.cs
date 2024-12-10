@@ -9,7 +9,7 @@ public static class OrderEndpoints
 {
     public static void MapOrderEndpoints (this IEndpointRouteBuilder routes)
     {
-        var group = routes.MapGroup("/api/Order").WithTags(nameof(Order));
+        var group = routes.MapGroup("/orders").WithTags(nameof(Order));
 
         group.MapGet("/", async (OrderDbContext db) =>
         {
@@ -48,7 +48,7 @@ public static class OrderEndpoints
         {
             db.Order.Add(order);
             await db.SaveChangesAsync();
-            return TypedResults.Created($"/api/Order/{order.Id}",order);
+            return TypedResults.Created($"/orders/{order.Id}",order);
         })
         .WithName("CreateOrder")
         .WithOpenApi();

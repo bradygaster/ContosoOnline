@@ -1,15 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
-using ContosoOnline.OrderApi.Data;
+﻿using ContosoOnline.OrderApi.Data;
 using ContosoOnline.OrderApi.DataModels;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.OpenApi;
+using Microsoft.EntityFrameworkCore;
 namespace ContosoOnline.OrderApi;
 
 public static class CartEndpoints
 {
     public static void MapCartEndpoints (this IEndpointRouteBuilder routes)
     {
-        var group = routes.MapGroup("/api/Cart").WithTags(nameof(Cart));
+        var group = routes.MapGroup("carts").WithTags(nameof(Cart));
 
         group.MapGet("/", async (OrderDbContext db) =>
         {
@@ -46,7 +45,7 @@ public static class CartEndpoints
         {
             db.Cart.Add(cart);
             await db.SaveChangesAsync();
-            return TypedResults.Created($"/api/Cart/{cart.Id}",cart);
+            return TypedResults.Created($"/carts/{cart.Id}",cart);
         })
         .WithName("CreateCart")
         .WithOpenApi();
