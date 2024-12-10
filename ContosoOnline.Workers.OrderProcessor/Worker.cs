@@ -1,24 +1,39 @@
-namespace ContosoOnline.Workers.OrderProcessor
+using System.Net.Http.Json;
+
+namespace ContosoOnline.Workers.OrderProcessor;
+
+internal class Worker(ILogger<Worker> logger, OrdersApiClient ordersApiClient) : BackgroundService
 {
-    public class Worker : BackgroundService
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        private readonly ILogger<Worker> _logger;
-
-        public Worker(ILogger<Worker> logger)
+        while (!stoppingToken.IsCancellationRequested)
         {
-            _logger = logger;
-        }
+            var orders = await ordersApiClient.GetOrders();
+            logger.LogInformation($"There are {orders!.Count(x => x.Processed == null)} orders to process.");
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            while (!stoppingToken.IsCancellationRequested)
+            foreach (var order in orders!.Where(x => x.Processed == null))
             {
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                }
-                await Task.Delay(1000, stoppingToken);
+                logger.LogInformation($"Processing order {order.Id}.");
+                order.Processed = DateTime.UtcNow;
+                await ordersApiClient.ProcessOrder(order);
             }
+
+            await Task.Delay(5000, stoppingToken);
         }
     }
+}
+
+internal class OrdersApiClient(HttpClient httpClient)
+{
+    internal async Task<List<Order>?> GetOrders()
+        => await httpClient.GetFromJsonAsync<List<Order>>("/orders");
+    internal async Task ProcessOrder(Order order)
+        => await httpClient.PutAsJsonAsync($"/orders/{order.Id}", order);
+}
+
+public class Order
+{
+    public Guid Id { get; set; }
+    public Guid CartId { get; set; }
+    public DateTime? Processed { get; set; }
 }
