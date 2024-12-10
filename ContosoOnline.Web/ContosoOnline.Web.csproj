@@ -10,4 +10,8 @@
     <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.10.4" />
     <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.10.4" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Clients.Catalog\Clients.Catalog.csproj" />
+  </ItemGroup>
 </Project>

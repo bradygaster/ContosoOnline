@@ -1,15 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
-using ContosoOnline.CatalogApi.Data;
+﻿using ContosoOnline.CatalogApi.Data;
 using ContosoOnline.CatalogApi.DataModels;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.OpenApi;
+using Microsoft.EntityFrameworkCore;
 namespace ContosoOnline.CatalogApi;
 
 public static class ProductEndpoints
 {
     public static void MapProductEndpoints (this IEndpointRouteBuilder routes)
     {
-        var group = routes.MapGroup("/api/Product").WithTags(nameof(Product));
+        var group = routes.MapGroup("/products").WithTags(nameof(Product));
 
         group.MapGet("/", async (CatalogDbContext db) =>
         {
@@ -48,7 +47,7 @@ public static class ProductEndpoints
         {
             db.Products.Add(product);
             await db.SaveChangesAsync();
-            return TypedResults.Created($"/api/Product/{product.Id}",product);
+            return TypedResults.Created($"/products/{product.Id}",product);
         })
         .WithName("CreateProduct")
         .WithOpenApi();
