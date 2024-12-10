@@ -33,9 +33,6 @@ public static class OrderEndpoints
             var affected = await db.Order
                 .Where(model => model.Id == id)
                 .ExecuteUpdateAsync(setters => setters
-                    .SetProperty(m => m.Id, order.Id)
-                    .SetProperty(m => m.CartId, order.CartId)
-                    .SetProperty(m => m.Received, order.Received)
                     .SetProperty(m => m.Processed, order.Processed)
                     );
             return affected == 1 ? TypedResults.Ok() : TypedResults.NotFound();

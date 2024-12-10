@@ -47,6 +47,7 @@
                 <td>
                     @if (cart != null && cart.Items.Any())
                     {
+                        <button @onclick="() => SubmitOrder()">Submit Order</button>
                         <button @onclick="() => ClearCart()">Clear Cart</button>
                     }
                 </td>
@@ -107,11 +108,11 @@
     {
         if (!cart!.Items.Any(i => i.ProductId == product.Id))
         {
-            await shoppingApiClient.AddItemToCart(new CartItem { CartId = cart.Id, ProductId = product.Id, Quantity = 1 });
+            await shoppingApiClient.AddItemToCartAsync(new CartItem { CartId = cart.Id, ProductId = product.Id, Quantity = 1 });
         }
         else
         {
-            await shoppingApiClient.UpdateItemInCart(new CartItem
+            await shoppingApiClient.UpdateItemInCartAsync(new CartItem
                 {
                     Id = cart!.Items.First(x => x.ProductId == product.Id).Id,
                     CartId = cart.Id,
@@ -139,5 +140,19 @@
     {
         await SetCartIdInLocalStorage(Guid.Empty);
         await RefreshCart();
+    }
+
+    private async Task SubmitOrder()
+    {
+        var order = new Order
+            {
+                Id = Guid.NewGuid(),
+                CartId = cart!.Id,
+                Received = DateTime.UtcNow,
+            };
+
+        await shoppingApiClient.SubmitOrderAsync(order);
+
+        await ClearCart();
     }
 }

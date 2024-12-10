@@ -16,14 +16,17 @@ public class ShoppingApiClient(HttpClient httpClient)
         return cart;
     }
 
-    public async Task AddItemToCart(CartItem item)
+    public async Task AddItemToCartAsync(CartItem item)
         => await httpClient.PostAsJsonAsync<CartItem>($"/carts/{item.CartId}/items", item);
 
-    public async Task UpdateItemInCart(CartItem item)
+    public async Task UpdateItemInCartAsync(CartItem item)
         => await httpClient.PutAsJsonAsync<CartItem>($"/carts/{item.CartId}/items/{item.Id}", item);
 
-    public async Task DeleteCartItem(Guid itemId, Guid cartId)
+    public async Task DeleteCartItemAsync(Guid itemId, Guid cartId)
         => await httpClient.DeleteAsync($"/carts/{cartId}/items/{itemId}");
+
+    public async Task SubmitOrderAsync(Order order)
+        => await httpClient.PostAsJsonAsync($"/orders", order);
 }
 
 public class Cart
@@ -36,7 +39,8 @@ public class Cart
 public class Order
 {
     public Guid Id { get; set; }
-    // Other properties
+    public DateTime Received { get; set; }
+    public Guid CartId { get; set; }
 }
 
 public class CartItem
