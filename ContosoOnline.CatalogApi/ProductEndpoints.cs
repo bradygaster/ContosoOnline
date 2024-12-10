@@ -18,7 +18,7 @@ public static class ProductEndpoints
         .WithName("GetAllProducts")
         .WithOpenApi();
 
-        group.MapGet("/{id}", async Task<Results<Ok<Product>, NotFound>> (int id, CatalogDbContext db) =>
+        group.MapGet("/{id}", async Task<Results<Ok<Product>, NotFound>> (Guid id, CatalogDbContext db) =>
         {
             return await db.Products.AsNoTracking()
                 .FirstOrDefaultAsync(model => model.Id == id)
@@ -29,7 +29,7 @@ public static class ProductEndpoints
         .WithName("GetProductById")
         .WithOpenApi();
 
-        group.MapPut("/{id}", async Task<Results<Ok, NotFound>> (int id, Product product, CatalogDbContext db) =>
+        group.MapPut("/{id}", async Task<Results<Ok, NotFound>> (Guid id, Product product, CatalogDbContext db) =>
         {
             var affected = await db.Products
                 .Where(model => model.Id == id)
@@ -53,7 +53,7 @@ public static class ProductEndpoints
         .WithName("CreateProduct")
         .WithOpenApi();
 
-        group.MapDelete("/{id}", async Task<Results<Ok, NotFound>> (int id, CatalogDbContext db) =>
+        group.MapDelete("/{id}", async Task<Results<Ok, NotFound>> (Guid id, CatalogDbContext db) =>
         {
             var affected = await db.Products
                 .Where(model => model.Id == id)

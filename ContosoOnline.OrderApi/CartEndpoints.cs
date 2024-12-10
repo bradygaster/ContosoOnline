@@ -18,7 +18,7 @@ public static class CartEndpoints
         .WithName("GetAllCarts")
         .WithOpenApi();
 
-        group.MapGet("/{id}", async Task<Results<Ok<Cart>, NotFound>> (int id, OrderDbContext db) =>
+        group.MapGet("/{id}", async Task<Results<Ok<Cart>, NotFound>> (Guid id, OrderDbContext db) =>
         {
             return await db.Cart.AsNoTracking()
                 .FirstOrDefaultAsync(model => model.Id == id)
@@ -29,7 +29,7 @@ public static class CartEndpoints
         .WithName("GetCartById")
         .WithOpenApi();
 
-        group.MapPut("/{id}", async Task<Results<Ok, NotFound>> (int id, Cart cart, OrderDbContext db) =>
+        group.MapPut("/{id}", async Task<Results<Ok, NotFound>> (Guid id, Cart cart, OrderDbContext db) =>
         {
             var affected = await db.Cart
                 .Where(model => model.Id == id)
@@ -51,7 +51,7 @@ public static class CartEndpoints
         .WithName("CreateCart")
         .WithOpenApi();
 
-        group.MapDelete("/{id}", async Task<Results<Ok, NotFound>> (int id, OrderDbContext db) =>
+        group.MapDelete("/{id}", async Task<Results<Ok, NotFound>> (Guid id, OrderDbContext db) =>
         {
             var affected = await db.Cart
                 .Where(model => model.Id == id)

@@ -18,7 +18,7 @@ public static class OrderEndpoints
         .WithName("GetAllOrders")
         .WithOpenApi();
 
-        group.MapGet("/{id}", async Task<Results<Ok<Order>, NotFound>> (int id, OrderDbContext db) =>
+        group.MapGet("/{id}", async Task<Results<Ok<Order>, NotFound>> (Guid id, OrderDbContext db) =>
         {
             return await db.Order.AsNoTracking()
                 .FirstOrDefaultAsync(model => model.Id == id)
@@ -29,7 +29,7 @@ public static class OrderEndpoints
         .WithName("GetOrderById")
         .WithOpenApi();
 
-        group.MapPut("/{id}", async Task<Results<Ok, NotFound>> (int id, Order order, OrderDbContext db) =>
+        group.MapPut("/{id}", async Task<Results<Ok, NotFound>> (Guid id, Order order, OrderDbContext db) =>
         {
             var affected = await db.Order
                 .Where(model => model.Id == id)
@@ -53,7 +53,7 @@ public static class OrderEndpoints
         .WithName("CreateOrder")
         .WithOpenApi();
 
-        group.MapDelete("/{id}", async Task<Results<Ok, NotFound>> (int id, OrderDbContext db) =>
+        group.MapDelete("/{id}", async Task<Results<Ok, NotFound>> (Guid id, OrderDbContext db) =>
         {
             var affected = await db.Order
                 .Where(model => model.Id == id)
