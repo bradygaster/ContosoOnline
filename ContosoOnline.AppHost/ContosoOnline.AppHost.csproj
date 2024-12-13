@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Sdk Name="Aspire.AppHost.Sdk" Version="9.1.0-preview.1.24557.1" />
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsAspireHost>true</IsAspireHost>
+    <UserSecretsId>95640b88-f277-4a0f-90db-696b7fa8fdde</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.AppHost" Version="9.1.0-preview.1.24557.1" />
+    <PackageReference Include="Aspire.Hosting.SqlServer" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ContosoOnline.CatalogApi\ContosoOnline.CatalogApi.csproj" />
+    <ProjectReference Include="..\ContosoOnline.OrderApi\ContosoOnline.OrderApi.csproj" />
+    <ProjectReference Include="..\ContosoOnline.Web\ContosoOnline.Web.csproj" />
+    <ProjectReference Include="..\ContosoOnline.Workers.OrderProcessor\ContosoOnline.Workers.OrderProcessor.csproj" />
+  </ItemGroup>
+
+</Project>
