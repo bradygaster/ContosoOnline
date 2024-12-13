@@ -6,7 +6,7 @@ builder.AddServiceDefaults();
 
 builder.Services.AddHttpClient<OrdersApiClient>(client =>
 {
-    client.BaseAddress = new("https://localhost:7144");
+    client.BaseAddress = new("https://orderapi");
 });
 
 builder.Services.AddHostedService<Worker>();

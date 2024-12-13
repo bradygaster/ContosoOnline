@@ -18,7 +18,7 @@ internal class Worker(ILogger<Worker> logger, OrdersApiClient ordersApiClient) :
                 await ordersApiClient.ProcessOrder(order);
             }
 
-            await Task.Delay(10000, stoppingToken);
+            await Task.Delay(5000, stoppingToken);
         }
     }
 }

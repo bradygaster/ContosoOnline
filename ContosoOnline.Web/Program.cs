@@ -14,12 +14,12 @@ builder.Services.AddFluentUIComponents();
 
 builder.Services.AddHttpClient<CatalogApiClient>(client =>
 {
-    client.BaseAddress = new("https://localhost:7079");
+    client.BaseAddress = new("https://catalogapi");
 });
 
 builder.Services.AddHttpClient<ShoppingApiClient>(client =>
 {
-    client.BaseAddress = new("https://localhost:7144");
+    client.BaseAddress = new("https://orderapi");
 });
 
 var app = builder.Build();
