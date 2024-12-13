@@ -14,5 +14,6 @@
   <ItemGroup>
       <ProjectReference Include="..\Clients.Catalog\Clients.Catalog.csproj" />
       <ProjectReference Include="..\Clients.Shopping\Clients.Shopping.csproj" />
+      <ProjectReference Include="..\ContosoOnline.ServiceDefaults\ContosoOnline.ServiceDefaults.csproj" />
   </ItemGroup>
 </Project>
